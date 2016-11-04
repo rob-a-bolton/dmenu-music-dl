@@ -1,0 +1,42 @@
+#!/usr/bin/env bash
+
+staging_dir="$HOME/.music-staging"
+music_dir="$HOME/music"
+
+url_text=""
+if command -v xclip 2>/dev/null; then
+    url_text=$(xclip -selection clip -o)
+elif command -v xsel 2>/dev/null; then
+    url_text=$(xsel -o -b)
+fi
+
+url=$(dmenu -p "Url" <<< "$url_text")
+
+if [[ -z "$url" ]]; then
+    echo "No url provided" >&2
+    exit 1
+fi
+
+song=$(dmenu -p "Song" <<< '')
+
+if [[ -z "$song" ]]; then
+    echo "No song name provided" >&2
+    exit 2
+fi
+
+artist=$(dmenu -i -p "Artist" <<< "$(find "$staging_dir" -mindepth 1 -maxdepth 1 -type d -printf '%f\n')")
+
+albums=''
+if [[ -n "$artist" ]]; then
+    albums="$(find "$staging_dir/$artist" -mindepth 1 -maxdepth 1 -type d -printf "%f\n" 2>/dev/null)"
+    album=$(dmenu -i -p "Album" <<< "$albums")
+fi
+
+
+mkdir "$staging_dir/$artist/$album" 2>/dev/null
+
+youtube-dl --write-thumbnail -x --audio-format mp3 -o "$staging_dir/$artist/$album/$song.%(ext)s" "$url"
+
+if [[ -n "$DISPLAY" ]]; then
+    notify-send -u normal "Downloaded $song"
+fi
