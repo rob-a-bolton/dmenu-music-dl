@@ -13,7 +13,7 @@ variables at the top of both scripts.
 Use dmenu-music-dl to download a song, and run process-staged-music to tag and move all downloaded songs
 out of staging.
 
-Requirements:
+Dependencies:
 
  - mutagen (provides mid3v2, available on pip)
  - youtube-dl (also available on pip)
