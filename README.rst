@@ -1,17 +1,14 @@
 About
 =====
 
-These two scripts allow you to download music from any site that works with youtube-dl
+This script allows you to download music from any site that works with youtube-dl
 and id3 tag it.
 
 Text input is done via dmenu.
 Thumbnails are saved where possible.
-The default music directory used is ~/music, and intermediary files are stored in ~/.music-staging
-Should you wish to change this (e.g. if you use the default XDG ~/Music dir) then modify the
+The default music directory used is *~/music*,
+Should you wish to change this (e.g. if you use the default XDG *~/Music* dir) then modify the
 variables at the top of both scripts.
-
-Use dmenu-music-dl to download a song, and run process-staged-music to tag and move all downloaded songs
-out of staging.
 
 Dependencies:
 

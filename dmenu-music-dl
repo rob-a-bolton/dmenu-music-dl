@@ -1,6 +1,5 @@
 #!/usr/bin/env bash
 
-staging_dir="$HOME/.music-staging"
 music_dir="$HOME/music"
 
 url_text=""
@@ -24,18 +23,31 @@ if [[ -z "$song" ]]; then
     exit 2
 fi
 
-artist=$(dmenu -i -p "Artist" <<< "$(find "$staging_dir" -mindepth 1 -maxdepth 1 -type d -printf '%f\n')")
+artist=$(dmenu -i -p "Artist" <<< "$(find "$music_dir" -mindepth 1 -maxdepth 1 -type d -printf '%f\n')")
 
 albums=''
 if [[ -n "$artist" ]]; then
-    albums="$(find "$staging_dir/$artist" -mindepth 1 -maxdepth 1 -type d -printf "%f\n" 2>/dev/null)"
+    albums="$(find "$music_dir/$artist" -mindepth 1 -maxdepth 1 -type d -printf "%f\n" 2>/dev/null)"
     album=$(dmenu -i -p "Album" <<< "$albums")
 fi
 
 
-mkdir "$staging_dir/$artist/$album" 2>/dev/null
+mkdir "$music_dir/$artist/$album" -p 2>/dev/null
 
-youtube-dl --write-thumbnail -x --audio-format mp3 -o "$staging_dir/$artist/$album/$song.%(ext)s" "$url"
+youtube-dl --write-thumbnail -x --audio-format mp3 -o "$music_dir/$artist/$album/$song.%(ext)s" "$url"
+
+songfile="$music_dir/$artist/$album/$song.mp3"
+artfile="$music_dir/$artist/$album/$song.jpg"
+
+if [[ -n "$album" ]]; then
+    mid3v2 -t "$song" -a "$artist" -A "$album" -p "$artfile" "$songfile"
+elif [[ -n "$artist" ]]; then
+    mid3v2 -t "$song" -a "$artist" -p "$artfile" "$songfile"
+else
+    mid3v2 -t "$song" -p "$artfile" "$songfile"
+fi
+
+rm "$artfile" 2>/dev/null
 
 if [[ -n "$DISPLAY" ]]; then
     notify-send -u normal "Downloaded $song"
